@@ -27,12 +27,12 @@
                         <div class="form-group" show-errors>
                             <label for="customerID" class="col-sm-3 control-label">Customer ID</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="vm.newCustomer.customerID" name="customerID" ng-required="true" ng-minlength="2">
+                                <input type="text" class="form-control" ng-model="vm.newCustomer.customerID" name="customerID" ng-required="true" ng-minlength="3">
                                 <p class="text-danger" ng-show="insertForm.customerID.$error.required && insertForm.customerID.$touched">
                                     Customer ID is required
                                 </p>
                                 <p class="text-danger" ng-show="insertForm.customerID.$error.minlength && insertForm.customerID.$touched">
-                                    Customer ID must have at least 2 characters.
+                                    Customer ID must have at least 3 characters.
                                 </p>
                             </div>
                         </div>
@@ -118,9 +118,9 @@
                         <span ng-hide="editMode">{{c.customerID}}</span>
 
                         <div class="form-group">
-                            <input type="text" class="form-control" name="customerID" ng-model="c.customerID" ng-show="editMode" ng-required ng-minlength="2" />
+                            <input type="text" class="form-control" name="customerID" ng-model="c.customerID" ng-show="editMode" ng-required ng-minlength="3" />
                             <p class="text-danger help-block" ng-hide="c.customerID">
-                                Customer ID must have at least 2 characters.
+                                Customer ID must have at least 3 characters.
                             </p>
                         </div>
                     </td>
