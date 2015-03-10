@@ -1,0 +1,178 @@
+﻿<div ng-cloak>
+
+    <!--Filter-->
+    <div class="input-group col-md-12" style="padding: 40px 0 20px 0;">
+        <span class="input-group-addon">
+            <i class="glyphicon glyphicon-search"></i>
+        </span>
+        <input class="form-control" type="text" ng-keydown="vm.filterChanged()" ng-model="vm.filterText" placeholder="filter...">
+        <span class="input-group-addon btn btn-default" ng-click="vm.clearFilter()" ng-hide="vm.filter.length == 0">
+            <i class="glyphicon glyphicon-remove"></i>
+        </span>
+    </div>
+
+    <div ng-hide="vm.isLoading">
+
+        <!--Form for insert mode -->
+        <div class="pull-right" ng-if="!vm.insertMode" style="padding-bottom:5px;">
+            <button type="button" class="btn btn-success" ng-click="vm.toggleInsertMode()">
+                <span class="glyphicon glyphicon-plus"></span> Add Customer
+            </button>
+        </div>
+        <section ng-if="vm.insertMode">
+            <form name="insertForm" ng-submit="vm.addCustomer()" novalidate>
+                <h4>Add Customer:</h4>
+                <div class="panel panel-default">
+                    <div class="panel-body form-horizontal">
+                        <div class="form-group" show-errors>
+                            <label for="customerID" class="col-sm-3 control-label">Customer ID</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="vm.newCustomer.customerID" name="customerID" ng-required="true" ng-minlength="2">
+                                <p class="text-danger" ng-show="insertForm.customerID.$error.required && insertForm.customerID.$touched">
+                                    Customer ID is required
+                                </p>
+                                <p class="text-danger" ng-show="insertForm.customerID.$error.minlength && insertForm.customerID.$touched">
+                                    Customer ID must have at least 2 characters.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group" show-errors>
+                            <label for="companyName" class="col-sm-3 control-label">Company Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="vm.newCustomer.companyName" name="companyName" ng-required="true">
+                                <p class="text-danger" ng-show="insertForm.companyName.$error.required && insertForm.companyName.$touched">
+                                    Company name is required
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactName" class="col-sm-3 control-label">Contact Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="vm.newCustomer.contactName" name="contactName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="col-sm-3 control-label">Address</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="address" class="form-control" ng-model="vm.newCustomer.address">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12 text-right">
+                                <a class="btn btn-default btn-danger" ng-click="vm.cancel()">
+                                    <span class="glyphicon glyphicon-remove"></span> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success" ng-disabled="insertForm.$invalid">
+                                    <span class="glyphicon glyphicon-floppy-disk"></span> Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!--panel -->
+            </form>
+        </section>
+        <!--End of Form for insert-->
+        <!--Grid for view and edit mode-->
+        <table class="table table-condensed table-hover table-striped table-bordered" ng-hide="vm.loading">
+            <!-- HEADER-->
+            <thead>
+                <tr>
+                    <!-- Content headers-->
+                    <th>
+
+                    </th>
+                    <th>
+                        Customer ID
+                    </th>
+                    <th>
+                        Company Name
+                    </th>
+                    <th>
+                        Contact Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+            </thead>
+            <!--BODY-->
+            <tbody>
+                <!--Content-->
+                <tr ng-repeat="c in vm.customers | filter:vm.filter" ng-class="{'default' : $even, 'success' : $odd}">
+                    <!--Edit/Delete buttons-->
+                    <td>
+                        <!--Edit + Delete  -->
+                        <div ng-hide="editMode">
+                            <i class="btn btn-sm glyphicon glyphicon-edit" ng-click="editMode=true; vm.toggleEditMode(c)" title="Edit"></i>
+                            <i class="btn btn-sm glyphicon glyphicon-trash" ng-click="vm.deleteCustomer(c)" title="Delete"></i>
+                        </div>
+                        <!--Save + Cancel -->
+                        <div ng-show="editMode">
+                            <i class="btn btn-sm glyphicon glyphicon-floppy-disk" ng-click="editMode=false; vm.updateCustomer(c)" title="save" ng-disabled="!c.customerID || !c.companyName"></i>
+                            <i class="btn btn-sm glyphicon glyphicon-remove" ng-click="editMode=false; vm.cancelEdit(c)" title="Cancel"></i>
+                        </div>
+                    </td>
+
+                    <!-- Content columns-->
+                    <td>
+                        <span ng-hide="editMode">{{c.customerID}}</span>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="customerID" ng-model="c.customerID" ng-show="editMode" ng-required ng-minlength="2" />
+                            <p class="text-danger help-block" ng-hide="c.customerID">
+                                Customer ID must have at least 2 characters.
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        <span ng-hide="editMode">{{c.companyName}}</span>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="companyName" ng-model="c.companyName" ng-show="editMode" ng-required />
+                            <p class="text-danger help-block" ng-show="!c.companyName">
+                                Company name is required
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        <span ng-hide="editMode">{{c.contactName}}</span>
+                        <div class="form-group">
+                            <input type="text" class="form-control" ng-model="c.contactName" ng-show="editMode" />
+                        </div>
+                    </td>
+                    <td>
+                        <span ng-hide="editMode">{{c.address}}</span>
+                        <div class="form-group">
+                            <input type="text" class="form-control" ng-model="c.address" ng-show="editMode" />
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <!--Pagination-->
+                <tr>
+                    <td colspan="5" class="text-center clearfix">
+                        <nav>
+                            <ul class="pagination pagination pagination-lg">
+                                <li><i class="btn btn-default glyphicon glyphicon-fast-backward" ng-click="vm.firstPage()" ng-disabled="vm.currentPage==1" title="First"></i></li>
+                                <li><i class="btn btn-default glyphicon glyphicon-arrow-left" ng-click="vm.prevPage()" ng-disabled="vm.currentPage==1" title="Prev"></i></li>
+                                <li><i class="btn btn-default glyphicon glyphicon-arrow-right" ng-click="vm.nextPage()" ng-disabled="vm.currentPage>=vm.totalCustomersPages" title="Next"></i></li>
+                                <li><i class="btn btn-default glyphicon glyphicon-fast-forward" ng-click="vm.lastPage()" ng-disabled="vm.currentPage>=vm.totalCustomersPages" title="Last"></i></li>
+                                <li style="padding-left:5px;" class="text-info">Go to page &nbsp; <input type="number" class="input-xs text-center" ng-model="vm.searchPage" ng-min="1" ng-max="{{vm.totalCustomersPages}}" ng-keydown="vm.onSearchKeydown($event)" />&nbsp; 
+                                    <i class="btn btn-info btn-sm" ng-click="vm.goToPage()" title="Last">Go!</i></li>
+                            </ul>
+                            <span class="pull-right">Page {{vm.currentPage}} of {{vm.totalCustomersPages}}</span>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <!--End of Grid for view and edit mode-->
+
+    </div>
+
+    <!--Loading indicator-->
+    <div ng-show="vm.isLoading" class="text-center"><i class="fa fa-2x fa-spinner fa-pulse fa-fw"></i> <span>Loading...</span></div>
+    <!--Overlay from Dan Whalin for any $http action -->
+    <div wc-overlay wc-overlay-delay="100"><i class="fa fa-3x fa-spinner fa-pulse fa-fw"></i> <span>Processing...</span></div>
+</div>
